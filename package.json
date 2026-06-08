@@ -1,0 +1,23 @@
+{
+  "name": "gemini-terminal-cli",
+  "version": "1.0.0",
+  "description": "A feature-rich, high-performance Node.js CLI tool to interact with the Gemini API.",
+  "type": "module",
+  "main": "bin/index.js",
+  "bin": {
+    "gemini": "./bin/index.js"
+  },
+  "scripts": {
+    "start": "node bin/index.js",
+    "test": "node tests/smoke.js"
+  },
+  "dependencies": {
+    "@google/genai": "^2.8.0",
+    "chalk": "^5.3.0",
+    "commander": "^12.0.0",
+    "inquirer": "^9.2.19",
+    "marked": "^12.0.1",
+    "marked-terminal": "^7.0.0",
+    "ora": "^8.0.1"
+  }
+}
