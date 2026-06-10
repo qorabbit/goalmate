@@ -1132,6 +1132,14 @@
         <span class="brand-name">GoalMate</span>
       </div>
       <div class="top-actions">
+        <!-- Logout Button (shows only when logged in) -->
+        <button class="icon-btn" id="topLogoutBtn" aria-label="로그아웃" style="display: none; border-color: var(--danger); color: var(--danger); margin-right: 8px;">
+          <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none">
+            <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"></path>
+            <polyline points="16 17 21 12 16 7"></polyline>
+            <line x1="21" y1="12" x2="9" y2="12"></line>
+          </svg>
+        </button>
         <button class="icon-btn" id="themeToggleBtn" aria-label="테마 전환">
           <svg id="themeIcon" viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none">
             <!-- Default Dark mode shows sun icon to toggle light -->
@@ -1938,6 +1946,7 @@
               saveState();
               document.getElementById('onboardingScreen').classList.add('hidden');
               document.getElementById('logoutCard').style.display = 'block';
+              document.getElementById('topLogoutBtn').style.display = 'flex';
               loadUserProfileData();
               checkInactivityCare();
               await syncFromSupabase();
@@ -1946,6 +1955,7 @@
               document.getElementById('onboardingScreen').classList.remove('hidden');
               document.getElementById('loginSection').style.display = 'none';
               document.getElementById('onboardingForm').style.display = 'flex';
+              document.getElementById('topLogoutBtn').style.display = 'none';
               const fullName = user.user_metadata?.full_name || '';
               document.getElementById('nickname').value = fullName;
             }
@@ -1956,6 +1966,7 @@
             document.getElementById('loginSection').style.display = 'flex';
             document.getElementById('onboardingForm').style.display = 'none';
             document.getElementById('logoutCard').style.display = 'none';
+            document.getElementById('topLogoutBtn').style.display = 'none';
           }
         });
       } else {
@@ -1965,8 +1976,10 @@
           onboardingScreen.classList.remove('hidden');
           document.getElementById('loginSection').style.display = 'none';
           document.getElementById('onboardingForm').style.display = 'flex';
+          document.getElementById('topLogoutBtn').style.display = 'none';
         } else {
           onboardingScreen.classList.add('hidden');
+          document.getElementById('topLogoutBtn').style.display = 'flex';
           loadUserProfileData();
           checkInactivityCare();
         }
@@ -3060,18 +3073,30 @@
         });
       }
 
+      // Logout handler
+      const handleLogout = async () => {
+        if (supabaseClient) {
+          try {
+            await supabaseClient.auth.signOut();
+          } catch (e) {
+            console.error("Supabase signOut error:", e);
+          }
+        }
+        appState.user = null;
+        localStorage.removeItem('goalmate_state');
+        localStorage.removeItem('goalmate_userid');
+        window.location.reload();
+      };
+
       // Logout Button click handler
       const logoutBtn = document.getElementById('logoutBtn');
       if (logoutBtn) {
-        logoutBtn.addEventListener('click', async () => {
-          if (supabaseClient) {
-            await supabaseClient.auth.signOut();
-            appState.user = null;
-            saveState();
-            localStorage.removeItem('goalmate_userid'); // Clear user ID
-            window.location.reload();
-          }
-        });
+        logoutBtn.addEventListener('click', handleLogout);
+      }
+
+      const topLogoutBtn = document.getElementById('topLogoutBtn');
+      if (topLogoutBtn) {
+        topLogoutBtn.addEventListener('click', handleLogout);
       }
 
       // Floating tab triggers
@@ -3112,6 +3137,7 @@
 
         saveState();
         document.getElementById('onboardingScreen').classList.add('hidden');
+        document.getElementById('topLogoutBtn').style.display = 'flex';
         loadUserProfileData();
 
         if (supabaseClient) {
